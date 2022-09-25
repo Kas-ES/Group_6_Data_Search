@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datasearch-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datasearch-api-pod
+  template:
+    metadata:
+      labels:
+        app: datasearch-api-pod
+    spec:
+      containers:
+        - name: search-api
+          image: gitlab.sdu.dk:5050/semester-project-e2020/team-06-data-search/template:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '50Mi'
+            limits:
+              cpu: '150m'
+              memory: '200Mi'
+      imagePullSecrets:
+        - name: sdugitlab
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service06
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: datasearch-api-pod

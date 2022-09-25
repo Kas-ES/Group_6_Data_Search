@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Search – Demo</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .results li {
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+          var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+        margin-bottom: 10px;
+        transition: 0.3s all ease-in-out;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto">
+      <div class="p-8 mt-4">
+        <div class="bg-white p-2 flex items-center rounded-full shadow-xl">
+          <input
+            class="rounded-l-full w-full py-4 px-6 text-gray-700 leading-tight focus:outline-none"
+            id="search"
+            type="text"
+            placeholder="Search"
+          />
+        </div>
+      </div>
+
+      <div class="p-8 pt-4">
+        <ul class="results" id="results"></ul>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    function unfade(element, delay) {
+      element.style.opacity = 0;
+
+      setTimeout(() => {
+        element.style.opacity = 1;
+      }, delay);
+    }
+
+    const input = document.getElementById('search');
+    const list = document.getElementById('results');
+
+    // Execute a function when the user releases a key on the keyboard
+    input.addEventListener('keyup', function (event) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+
+      const text = input.value;
+
+      if (!text) {
+        list.innerHTML = '';
+        return;
+      }
+
+      //fetch(`http://opensuse.stream.stud-srv.sdu.dk/search?q=${text}`)
+      fetch(`/search/songs/${text}`)
+        .then((res) => res.json())
+        .then((data) => {
+          list.innerHTML = '';
+
+          data.forEach((v, i) => {
+            const elm = document.createElement('li');
+            elm.innerHTML = v.title;
+
+            unfade(elm, 20 * i);
+
+            list.appendChild(elm);
+          });
+
+          input.focus();
+        });
+    });
+  </script>
+</html>
